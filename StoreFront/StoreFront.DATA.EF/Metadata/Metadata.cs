@@ -68,8 +68,9 @@ namespace StoreFront.DATA.EF.Models
         [Display(Name = "In Stock")]
         public string? StockQuantity { get; set; }
 
+        [Required(ErrorMessage = "Discontinued is required")]
         [Display(Name = "Discontued?")] 
-        public bool? IsDiscontinued { get; set; }
+        public bool IsDiscontinued { get; set; }
     }
 
     #endregion

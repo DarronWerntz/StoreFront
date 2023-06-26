@@ -19,7 +19,7 @@ namespace StoreFront.DATA.EF.Models
         public string? Description { get; set; }
         public string? Image { get; set; }
         public string? StockQuantity { get; set; }
-        public bool? IsDiscontinued { get; set; }
+        public bool IsDiscontinued { get; set; }
 
         public virtual Category? Category { get; set; }
         public virtual Material? Material { get; set; }

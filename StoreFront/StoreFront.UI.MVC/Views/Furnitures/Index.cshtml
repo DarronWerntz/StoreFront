@@ -1,0 +1,98 @@
+﻿@model IEnumerable<StoreFront.DATA.EF.Models.Furniture>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3"><span @*style=""*@>Our</span> Funiture</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a asp-action="Index" asp-controller="Home">Home</a> - Our Furniture</p>
+            <p>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Create">Create New</a>
+                    <a asp-action="Discontinued">Discontinued Furniture</a>
+                }
+            </p>
+        </div>
+            <a class="btn btn-primary" asp-action="TiledProducts">Tiled View</a>
+    </div>
+</div>
+<!-- Page Header End -->
+
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Material)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Image)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Material.Name)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.FurnitureId">Edit</a>
+
+                        <span> | </span>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.FurnitureId">Details</a><span> | </span>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+
+                        @if (item.OrderFurnitures.Count() == 0)
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.FurnitureId">Delete</a>
+                        }
+                        else
+                        {
+                            <a disabled="disabled" class="text-danger text-decoration-line-through" title="Cannot Delete furniture is referenced by an order.">
+                                Delete
+                            </a>
+                        }
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,6 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> signInManager
 
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,7 +31,6 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="~/css/style.css" rel="stylesheet">
 </head>
-
 
 
 
@@ -84,16 +87,29 @@
 
                             @if (User.IsInRole("Admin"))
                             {
+                            //Only displays the HTML inside of these curly braces when a user is logged in with the Admin role
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">
+                                        <span class="nav-label">
+                                            Admin
+                                            <span class="caret"></span>
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="@Url.Action("ListUsers", "Administration")">Users</a></li>
+                                        <li><a href="@Url.Action("ListRoles", "Administration")">Roles</a></li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "UserDetails")">User Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Categories")">Categories</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "OrderFurnitures")">Furniture in Orders</a>
+                                        </li>
+                                    </ul>
+                                </li>
 
-                                <div class="nav-item dropdown">
-
-                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
-
-                                    <div class="dropdown-menu rounded-0 m-0">
-
-                                        <a asp-action="Detail" asp-controller="Home" class="dropdown-item">Shop Detail</a>
-                                    </div>
-                                </div>
                             }
                         </div>
                         <div class="navbar-nav ml-auto py-0">
@@ -112,9 +128,9 @@
 
     </div>
     <!-- Navbar End -->
-    @*<div class="container">*@
+    <div class="container">
     @RenderBody()
-    @*</div>*@
+    </div>
 
 
 
@@ -126,14 +142,13 @@
                 <a href="" class="text-decoration-none">
                     <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">E</span>Shopper</h1>
                 </a>
-                <p>Dolore erat dolor sit lorem vero amet. Sed sit lorem magna, ipsum no sit erat lorem et magna ipsum dolore amet erat.</p>
                 <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
                 <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
                 <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
-                    <div class="col-md-4 mb-5">
+                    <div class="col-md-4 offset-2 mb-5">
                         <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <a class="text-dark mb-2" asp-action="Index" asp-controller="Home"><i class="fa fa-angle-right mr-2"></i>Home</a>
@@ -143,7 +158,7 @@
                             <a class="text-dark" asp-action="Contact" asp-controller="Home"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-5">
+                    <div class="col-md-4 offset-2 mb-5">
                         <h5 class="font-weight-bold text-dark mb-4">Newsletter</h5>
                         <form action="">
                             <div class="form-group">

@@ -13,6 +13,9 @@
                 <h1 class="font-weight-semi-bold text-uppercase mb-3"><span @*style=""*@>Our</span> Funiture</h1>
                 <div class="d-inline-flex">
                     <p class="m-0"><a asp-action="Index" asp-controller="Home">Home</a> - Our Furniture</p>
+
+
+
                 </div>
 
                 @if (User.IsInRole("Admin"))
@@ -25,6 +28,102 @@
         </div>
         <!-- Page Header End -->
 
+        <div class="row">
+
+
+            @*
+            Implementing Server-side Search
+            1) Add a <form>
+            2) Add an <input type="text"> to the <form>
+            3) Add an <input type="submit"> to the <form>
+            4) Add an if() to display the number of results and search term
+            5) Add search logic to the Controller Action
+            *@
+
+            <div class="offset-3 col-sm-6">
+                <form asp-action="TiledProducts" method="get">
+                    @*
+                    method="get" appends the key/value pairs from our form onto
+                    a query string in our URL. The ? in the URL indicates the
+                    beginning of a query string. Everything after the ? is a
+                    key/value pair (KVP).
+
+                    ?searchTerm=whateverIsSearchedFor
+                    Note: Multiple key/value pairs are separated by an &
+
+                    These key/value pairs are passed to the action as arguments for
+                    the action's parameters.
+
+                    *@
+                    @*
+                    Categories Filter Dropdown List
+                    *@
+                    <label for="categoryID" class="control-label d-block text-center">Filter by Category</label>
+                    <select name="categoryID" class="form-control text-center mb-3" asp-items="ViewBag.categoryID">
+                        <option value="0">[Choose a Category]</option>
+                    </select>
+
+
+
+
+                    @*
+                    Inputs for Search Functionality
+                    *@
+
+                    <input type="text" name="searchTerm" class="form-control text-center" placeholder="Search Furniture..." />
+                    <input type="submit" value="Go" class="form-control btn btn-primary text-center w-50 d-block" />
+
+
+                </form>
+
+                @if (ViewBag.NbrResults != null)
+                {
+                    <p class="mt-5 p-2 alert alert-warning text-center">
+                        Showing @ViewBag.NbrResults result@(ViewBag.NbrResults > 1 ? "s" : "") for '@ViewBag.SearchTerm'
+                    </p>
+                }
+
+
+
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <div class="col-sm-6 col-md-4 col-lg-4">
+                    <div class="box">
+                        <div class="option_container">
+                            <div class="options">
+                                <a asp-action="Details" asp-route-id="@item.FurnitureId" class="option1">
+                                    @item.Name
+                                </a>
+                                <a asp-action="AddToCart" asp-controller="ShoppingCart" asp-route-id="@item.FurnitureId" class="option2">
+                                    Add To Cart
+                                </a>
+                            </div>
+                        </div>
+                        <div class="img-box">
+                            <img src="~/images/@item.Image" alt="@item.Description">
+                        </div>
+                        <div class="detail-box">
+                            <h5>
+                                @item.Name
+                            </h5>
+                            <h6>
+                                @Html.DisplayFor(modelItem => item.Price)
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+            @*
+            Paged List Pager
+            *@
+
+
+        </div>
+
 
         <!-- These are the products... -->
         <div class="container-fluid bg-secondary mb-5">
@@ -36,7 +135,7 @@
                     <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="~/img/@item.FurnitureImage" alt="">
+                                <img class="img-fluid w-100" src="~/img/@item.Image" alt="">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3">@item.Name</h6>

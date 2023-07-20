@@ -57,8 +57,12 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.Image)
+                </td>*@
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.ProductImage)*@
+                    <img src="~/img/t_@item.Image" class="img-fluid" alt="@item.Description" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category.Name)

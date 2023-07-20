@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreFront.DATA.EF.Models;
-//using StoreFront.UI.MVC.Utilities;            *************************for picture uploader later
+using StoreFront.UI.MVC.Utilities;
 using System.Drawing;
+using Microsoft.AspNetCore.Hosting;
 
 namespace StoreFront.UI.MVC.Controllers
 {
@@ -15,9 +16,12 @@ namespace StoreFront.UI.MVC.Controllers
     {
         private readonly StoreFrontContext _context;
 
-        public FurnituresController(StoreFrontContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FurnituresController(StoreFrontContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Furnitures
@@ -96,7 +100,7 @@ namespace StoreFront.UI.MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FurnitureId,CategoryId,MaterialId,Name,Price,Description,Image,StockQuantity,IsDiscontinued")] Furniture furniture)
+        public async Task<IActionResult> Edit(int id, [Bind("FurnitureId,CategoryId,MaterialId,Name,Price,Description,Image,StockQuantity,IsDiscontinued, FurnitureImage")] Furniture furniture)
         {
             if (id != furniture.FurnitureId)
             {
@@ -105,6 +109,51 @@ namespace StoreFront.UI.MVC.Controllers
 
             if (ModelState.IsValid)
             {
+
+                #region EDIT File Upload
+                //retain old image file name so we can delete if a new file was uploaded
+                string oldImageName = furniture.Image;
+
+                //Check if the user uploaded a file
+                if (furniture.FurnitureImage != null)
+                {
+                    //get the file's extension
+                    string ext = Path.GetExtension(furniture.FurnitureImage.FileName);
+
+                    //list valid extensions
+                    string[] validExts = { ".jpeg", ".jpg", ".png", ".gif" };
+
+                    //check the file's extension against the list of valid extensions
+                    if (validExts.Contains(ext.ToLower()) && furniture.FurnitureImage.Length < 4_194_303)
+                    {
+                        //generate a unique file name
+                        furniture.Image = Guid.NewGuid() + ext;
+                        //build our file path to save the image
+                        string webRootPath = _webHostEnvironment.WebRootPath;
+                        string fullPath = webRootPath + "/img/";
+
+                        //Delete the old image
+                        if (oldImageName != "noimage.png")
+                        {
+                            ImageUtility.Delete(fullPath, oldImageName);
+                        }
+
+                        //Save the new image to webroot
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await furniture.FurnitureImage.CopyToAsync(memoryStream);
+                            using (var img = Image.FromStream(memoryStream))
+                            {
+                                int maxImageSize = 500;
+                                int maxThumbSize = 100;
+                                ImageUtility.ResizeImage(fullPath, furniture.Image, img, maxImageSize, maxThumbSize);
+                            }
+                        }
+
+                    }
+                }
+                #endregion
+
                 try
                 {
                     _context.Update(furniture);
